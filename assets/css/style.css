@@ -32,25 +32,35 @@
     text-align: left;
     font-size: small;
   }
-  .card {
+  
+  .banner {
     /* A flex-basis of 200px sets the starting width */
     /* A flex-grow value of 1 allows the elements to evenly grow to fill the remaining space */
     flex: 1 0 200px;
     padding: 10px;
     text-align: center;
-    border-style: solid;
-    border-width: 1px;
+  }
+
+  #banner1 {
+    font-weight: bolder;
+    font-size: xx-large;
   }
   
-  .card header {
-    padding: 20px;
-    background: #13293d;
-    color: #fff;
-  }
+#start {
+  background-color: rgb(109, 33, 109);
+  height: 60px;
+  width: 90px;
+  color: white;
+}
+
+#questionList {
+  list-style-type: none;
+}
+.buttonAns {
   
-  .card.camera {
-    /* With a flex-grow value of 2, this element grows twice as wide as others */
-    /* The second value, flex-shrink, defines how the element will shrink if it can't fit */
-    flex: 2 1 200px;
-  }
+    background-color: rgb(109, 33, 109);
+    height: 60px;
+    width: 90px;
+    color: white;
   
+}
