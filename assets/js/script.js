@@ -39,6 +39,23 @@ sectionEl.appendChild(goQuiz);
 
 goQuiz.addEventListener("click", runQuiz);
 
+var ulEl = document.createElement("ul");
+
+var liEl1 = document.createElement("li");
+var btnEl1 = document.createElement("button");
+
+var liEl2 = document.createElement("li");
+var btnEl2 = document.createElement("button");
+
+var liEl3 = document.createElement("li");
+var btnEl3 = document.createElement("button");
+
+var liEl4 = document.createElement("li");
+var btnEl4 = document.createElement("button");
+
+
+var allButtons;
+
 let codeQuestions = [
   {
     Question: "Arrays in JavaScript can be used to store _________.",
@@ -81,31 +98,32 @@ let codeQuestions = [
     realAnswer: "C"
   }]
 
+var lastQuestionIndex = codeQuestions.length - 1;
+
+let runningQuestionIndex = 0;
 
 function runQuiz(event) {
   // Prevent default action
   event.preventDefault();
   goQuiz.setAttribute("style", "visibility: hidden");
   setTime();
+  setUp();
+}
 
-  var ulEl = document.createElement("ul");
+function setUp() {
   ulEl.setAttribute("id", "questionList");
 
-  var liEl1 = document.createElement("li");
-  var btnEl1 = document.createElement("button");
   btnEl1.setAttribute("id", "A");
+  btnEl1.addEventListener("click", checkAnswer);
 
-  var liEl2 = document.createElement("li");
-  var btnEl2 = document.createElement("button");
   btnEl2.setAttribute("id", "B");
+  btnEl2.addEventListener("click", checkAnswer);
 
-  var liEl3 = document.createElement("li");
-  var btnEl3 = document.createElement("button");
   btnEl3.setAttribute("id", "C");
+  btnEl3.addEventListener("click", checkAnswer);
 
-  var liEl4 = document.createElement("li");
-  var btnEl4 = document.createElement("button");
   btnEl4.setAttribute("id", "D");
+  btnEl4.addEventListener("click", checkAnswer);
 
   ulEl.appendChild(liEl1);
   liEl1.appendChild(btnEl1)
@@ -117,48 +135,64 @@ function runQuiz(event) {
   liEl3.appendChild(btnEl3)
 
   ulEl.appendChild(liEl4);
-  liEl4.appendChild(btnEl4)
+  liEl4.appendChild(btnEl4);
 
-  sectionEl.appendChild(ulEl)
+  sectionEl.appendChild(ulEl);
 
-  var allButtons = document.querySelectorAll("button")
+  allButtons = document.querySelectorAll("button");
+  displayQuestion();
+}
+function displayQuestion(){
+  let q = codeQuestions[runningQuestionIndex];
 
-  codeQuestions.forEach(q => {
-    h1El.textContent = q.Question;
-    h2El.textContent = "";
+  h1El.textContent = q.Question;
+  h2El.textContent = "";
 
-    btnEl1.textContent = "A. " + q.answerA;
+  allButtons[1].textContent = "A. " + q.answerA;
 
-    btnEl2.textContent = "B. " + q.answerB;
+  allButtons[2].textContent = "B. " + q.answerB;
 
-    btnEl3.textContent = "C. " + q.answerC;
+  allButtons[3].textContent = "C. " + q.answerC;
 
-    btnEl4.textContent = "D. " + q.answerD;
+  allButtons[4].textContent = "D. " + q.answerD;
 
 
-    for (var i = 1; i < allButtons.length; i++) {
-      allButtons[i].setAttribute("style", "width: 150px;text-align: LEFT; background-color: rgb(109, 33, 109);color: white");
-      allButtons[i].onmouseover = function () {
-        this.style.backgroundColor = "#D4A4D8";
-      }
-
-      allButtons[i].onmouseout = function () {
-        this.style.backgroundColor = "#6D216D";
-      }    
+  for (var i = 1; i < allButtons.length; i++) {
+    allButtons[i].setAttribute("style", "width: 150px;text-align: LEFT; background-color: rgb(109, 33, 109);color: white");
+    allButtons[i].onmouseover = function () {
+      this.style.backgroundColor = "#D4A4D8";
     }
 
-  });
-
-  btnEl1.addEventListener("click", captureAnswer);
-  btnEl2.addEventListener("click", captureAnswer);
-  btnEl3.addEventListener("click", captureAnswer);
-  btnEl4.addEventListener("click", captureAnswer);
+    allButtons[i].onmouseout = function () {
+      this.style.backgroundColor = "#6D216D";
+    }
+  }
 }
 
-function captureAnswer(event) {
+
+function checkAnswer(event) {
   event.preventDefault();
-  console.log(event);
+  selectedAnswer = event.target.id;
+  console.log("You selected: " + selectedAnswer);
+  console.log("The answer is: " + codeQuestions[runningQuestionIndex].realAnswer);
+  if (codeQuestions[runningQuestionIndex].realAnswer == selectedAnswer) {
+    console.log("Score  1 point");
+  }
+  else {
+    console.log("Answer is wrong");
+  }
+  if (runningQuestionIndex < lastQuestionIndex)
+    runningQuestionIndex++;
+  else
+    runningQuestionIndex = 0;
+
+  displayQuestion();
 }
+
+function RightOrWrong() {
+  //under construction
+}
+
 function setTime() {
   // Sets interval in variable
   var timerInterval = setInterval(function () {
