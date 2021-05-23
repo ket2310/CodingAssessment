@@ -7,6 +7,13 @@ var sectionEl = document.createElement("section");
 var clock = document.getElementById("clock");
 var secondsLeft = 90;
 var selectedAnswer = "";
+var totalCorrect = 0;
+var finalScore = 0;
+var initialsEl = document.createElement("input");
+var submitInitEl = document.createElement("button");
+var goBackEl = document.createElement("button");
+var clearScores = document.createElement("button");
+var playerEl;
 
 headerEl.setAttribute("class", "main-header");
 headerh1El.setAttribute("id", "highscores");
@@ -142,7 +149,7 @@ function setUp() {
   allButtons = document.querySelectorAll("button");
   displayQuestion();
 }
-function displayQuestion(){
+function displayQuestion() {
   let q = codeQuestions[runningQuestionIndex];
 
   h1El.textContent = q.Question;
@@ -177,39 +184,181 @@ function checkAnswer(event) {
   console.log("The answer is: " + codeQuestions[runningQuestionIndex].realAnswer);
   if (codeQuestions[runningQuestionIndex].realAnswer == selectedAnswer) {
     console.log("Score  1 point");
+    totalCorrect++;
   }
   else {
     console.log("Answer is wrong");
+    secondsLeft -= 10;
   }
-  if (runningQuestionIndex < lastQuestionIndex)
+  if (runningQuestionIndex < lastQuestionIndex) {
     runningQuestionIndex++;
-  else
+    displayQuestion();
+  }
+  else {
     runningQuestionIndex = 0;
 
-  displayQuestion();
+  }
+
 }
 
-function RightOrWrong() {
-  //under construction
-}
 
 function setTime() {
   // Sets interval in variable
+  secondsLeft = 90;
   var timerInterval = setInterval(function () {
     secondsLeft--;
     headerh2El.textContent = "Time: " + secondsLeft;
 
 
-    if (secondsLeft === 0) {
+    if (secondsLeft === 0 || runningQuestionIndex === codeQuestions.length - 1) {
       // Stops execution of action at set interval
       clearInterval(timerInterval);
       // Calls function to create and append image
-      doHighScore();
+      doFinalScore();
     }
 
   }, 1000);
 }
 
-function doHighScore() {
+function doFinalScore() {
+  console.log(totalCorrect);
+  finalScore = totalCorrect / codeQuestions.length * 100;
 
+  sectionEl.removeChild(sectionEl.childNodes[3]);
+  h1El.textContent = "All Done!";
+  h2El.textContent = "Your final score is: " + finalScore;
+
+  var h2InitialsEl = document.createElement("h2");
+
+  initialsEl.setAttribute("type", "input");
+  h2InitialsEl.textContent = "Enter Initials: ";
+  h2InitialsEl.appendChild(initialsEl);
+
+  submitInitEl.textContent = "Submit";
+  submitInitEl.setAttribute("style", "width: 100px;text-align: center; background-color: rgb(109, 33, 109);color: white");
+  submitInitEl.onmouseover = function () {
+    this.style.backgroundColor = "#D4A4D8";
+  }
+
+  submitInitEl.onmouseout = function () {
+    this.style.backgroundColor = "#6D216D";
+  }
+
+
+  submitInitEl.addEventListener("click", doHighScore)
+
+  h2InitialsEl.appendChild(submitInitEl);
+  sectionEl.appendChild(h2InitialsEl);
+
+}
+
+function doHighScore() {
+  var ulHighScoresEl = document.createElement("ul");
+
+  h1El.textContent = "High Scores"
+  h2El.textContent = "";
+
+  playerEl = initialsEl.value;
+  sectionEl.removeChild(sectionEl.childNodes[2]);
+  sectionEl.removeChild(sectionEl.childNodes[2]);
+  var hsList = new Array();
+
+  var count = 0;
+  if (hsList.length == 0) {
+    hsList[count] = playerEl;
+    console.log(hsList[count]);
+  }
+  else {
+    hsList.push(playerEl);
+  }
+
+  var objList = new Array();
+  for (let x = 0; x < hsList.length; x++) {
+    objList = [{ [x + 1]: hsList[x] }];
+
+  }
+
+  var finalList;
+  for (let x = 0; x < hsList.length; x++) {
+    objList.forEach(type => {
+      finalList = Object.keys(type)[0];
+    });
+
+    var li = document.createElement('li');     // create li element.
+    li.textContent = finalList + ". " + hsList[x] + " - " + finalScore;    // assigning text to li using array value.
+    li.setAttribute('style', 'display: block;');    // remove the bullets.
+
+    ulHighScoresEl.appendChild(li);     // append li to ul.
+    sectionEl.appendChild(li);
+  }
+  console.log("Final list: " + finalList)
+
+
+  // Put the object into storage
+  localStorage.setItem('objList', JSON.stringify(objList));
+
+  var highScorers = localStorage.getItem('objList');
+
+  goBackEl.textContent = "Go Back";
+  goBackEl.setAttribute("style", "width: 100px;text-align: left; background-color: rgb(109, 33, 109);color: white");
+  goBackEl.onmouseover = function () {
+    this.style.backgroundColor = "#D4A4D8";
+  }
+
+  goBackEl.onmouseout = function () {
+    this.style.backgroundColor = "#6D216D";
+  }
+
+  clearScores.textContent = "Clear Highscores";
+  clearScores.setAttribute("style", "width: 200px;text-align: left; background-color: rgb(109, 33, 109);color: white");
+  clearScores.onmouseover = function () {
+    this.style.backgroundColor = "#D4A4D8";
+  }
+
+  clearScores.onmouseout = function () {
+    this.style.backgroundColor = "#6D216D";
+  }
+
+  sectionEl.appendChild(goBackEl);
+  sectionEl.appendChild(clearScores);
+
+  clearScores.addEventListener("click", resetScore);
+
+  goBackEl.addEventListener("click", doOver);
+}
+
+function doOver(event) {
+  event.preventDefault();
+  while (sectionEl.firstChild)
+    sectionEl.removeChild(sectionEl.firstChild);
+
+  runQuizAgain();
+  console.log(sectionEl)
+}
+
+
+function runQuizAgain() {
+  var h1El = document.createElement("h1");
+  h1El.textContent = "Coding Quiz Challenge";
+  h1El.setAttribute("id", "banner1");
+  sectionEl.appendChild(h1El)
+
+  var h2El = document.createElement("h2");
+  h2El.textContent = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!";
+  h2El.setAttribute("id", "banner2");
+  sectionEl.appendChild(h2El);
+
+  var goQuiz = document.createElement("button");
+  goQuiz.setAttribute("id", "start")
+  goQuiz.textContent = "Start Quiz";
+  sectionEl.appendChild(goQuiz);
+
+  goQuiz.addEventListener("click", runQuiz);
+
+  
+
+}
+function resetScore(event) {
+  event.preventDefault();
+  sectionEl.removeChild(sectionEl.childNodes[2]);
 }
